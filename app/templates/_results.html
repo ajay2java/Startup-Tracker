@@ -1,0 +1,93 @@
+{% if chips %}
+<div class="chips">
+  {% for chip in chips %}
+    <a class="chip" href="{{ chip.remove_page_url }}" hx-get="{{ chip.remove_url }}"
+       hx-target="#results" hx-swap="innerHTML" hx-push-url="{{ chip.remove_page_url }}">
+      {{ chip.label }} <span class="chip-x">&times;</span>
+    </a>
+  {% endfor %}
+  <a class="chip clear-all" href="{{ clear_page_url }}" hx-get="{{ clear_url }}"
+     hx-target="#results" hx-swap="innerHTML" hx-push-url="{{ clear_page_url }}">Clear all</a>
+</div>
+{% endif %}
+
+<section class="map-section {{ 'is-collapsed' if filters.state }}">
+  {% if filters.state %}
+    <div class="map-strip" onclick="this.closest('.map-section').classList.toggle('is-collapsed')">
+      <span class="strip-label">Showing <strong>{{ filters.state }}</strong> — click to show map</span>
+    </div>
+  {% endif %}
+
+  <div class="map-wrap">
+    {% if not filters.state and (filters.sector or filters.stage) %}
+      <style>{{ density_css(state_counts) }}</style>
+    {% endif %}
+    {{ render_map(state_url, state_page_url) | safe }}
+    {% for state, (cx, cy) in STATE_CENTROIDS.items() if state not in SMALL_NORTHEAST_STATES %}
+      {% set n = state_new.get(state, 0) %}
+      {% if n > 0 %}
+        <span class="map-dot"
+              style="left:{{ ((cx + DOT_OFFSET[0]) / 959 * 100)|round(2) }}%; top:{{ ((cy + DOT_OFFSET[1]) / 593 * 100)|round(2) }}%"
+              title="{{ n }} new in {{ state }}">
+          {% if n > 1 %}{{ n }}{% endif %}
+        </span>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="small-states">
+    {% for state in SMALL_NORTHEAST_STATES %}
+      <a class="small-state-box {{ 'active' if filters.state == state }}"
+         href="{{ state_page_url(state) }}" hx-get="{{ state_url(state) }}"
+         hx-target="#results" hx-swap="innerHTML" hx-push-url="{{ state_page_url(state) }}">
+        <span class="ss-name">{{ state }}</span>
+        <span class="ss-count">{{ state_counts.get(state, 0) }}</span>
+        {% if state_new.get(state, 0) > 0 %}
+          <span class="dot">{% if state_new[state] > 1 %}{{ state_new[state] }}{% endif %}</span>
+        {% endif %}
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="pickers">
+  <div class="picker">
+    <h3>Stage</h3>
+    <div class="picker-items">
+      {% for st in ALL_STAGES %}
+        <a class="picker-item {{ 'active' if filters.stage == st }}"
+           href="{{ stage_page_url(st) }}" hx-get="{{ stage_url(st) }}"
+           hx-target="#results" hx-swap="innerHTML" hx-push-url="{{ stage_page_url(st) }}">
+          {{ st }} <span class="count">{{ stage_counts.get(st, 0) }}</span>
+          {% if stage_new.get(st, 0) > 0 %}
+            <span class="dot">{% if stage_new[st] > 1 %}{{ stage_new[st] }}{% endif %}</span>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="picker">
+    <h3>Sector</h3>
+    <div class="picker-items">
+      {% for sec in ALL_SECTORS %}
+        <a class="picker-item {{ 'active' if filters.sector == sec }}"
+           href="{{ sector_page_url(sec) }}" hx-get="{{ sector_url(sec) }}"
+           hx-target="#results" hx-swap="innerHTML" hx-push-url="{{ sector_page_url(sec) }}">
+          {{ sec }} <span class="count">{{ sector_counts.get(sec, 0) }}</span>
+          {% if sector_new.get(sec, 0) > 0 %}
+            <span class="dot">{% if sector_new[sec] > 1 %}{{ sector_new[sec] }}{% endif %}</span>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="list-header">
+  <span class="count-pill">{{ shown_so_far }} of {{ total }}</span>
+</div>
+
+<div id="company-list">
+  {% include "_rows.html" %}
+</div>

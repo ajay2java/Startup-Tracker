@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Startup Tracker</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/htmx.min.js" defer></script>
+</head>
+<body>
+<header>
+  <h1>Startup Tracker</h1>
+  <span class="sub">Find US startups before the press does</span>
+  <div class="pipeline-actions">
+    <button hx-post="/pipeline/run" hx-target="#pipeline-status" hx-swap="innerHTML"
+            hx-disabled-elt="this" hx-indicator="#run-ind">
+      <span id="run-ind" class="htmx-indicator spinner"></span>
+      Run pipeline
+    </button>
+    <button hx-post="/pipeline/recheck" hx-target="#pipeline-status" hx-swap="innerHTML"
+            hx-disabled-elt="this" hx-indicator="#recheck-ind">
+      <span id="recheck-ind" class="htmx-indicator spinner"></span>
+      Recheck holds
+    </button>
+  </div>
+  <div id="pipeline-status"></div>
+</header>
+
+<main>
+  <details class="panel addform">
+    <summary>+ Add a company manually</summary>
+    <form style="margin-top:14px" hx-post="/companies" hx-target="#add-toast" hx-swap="innerHTML"
+          hx-on::after-request="if(event.detail.successful) this.reset()">
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label>URL</label>
+          <input name="url" required placeholder="https://acme.example" style="width:100%">
+        </div>
+        <div class="field" style="flex:1">
+          <label>Notes</label>
+          <input name="notes" placeholder="Optional" style="width:100%">
+        </div>
+        <button type="submit">Add</button>
+      </div>
+      <p class="muted" style="margin:8px 0 0">
+        Bypasses the gate (your judgment already vetted it) — still gets a
+        name/description/sector on the next pipeline run.
+      </p>
+    </form>
+    <div id="add-toast"></div>
+  </details>
+
+  <div id="results" hx-get="{{ self_url }}" hx-trigger="companies-updated from:body" hx-swap="innerHTML">
+    {% include "_results.html" %}
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<div class="company-row"
+     {% if is_last and has_more %}hx-get="{{ next_page_url }}" hx-trigger="revealed" hx-swap="afterend"{% endif %}>
+  <div class="gutter">
+    {% if company.first_seen and company.first_seen >= new_cutoff %}
+      <span class="new-dot" title="New in the last 7 days"></span>
+    {% endif %}
+  </div>
+  <div class="main">
+    <div class="row-head">
+      <strong class="name">{{ company.name or company.domain }}</strong>
+      <span class="domain">{{ company.domain }}</span>
+    </div>
+    <div class="desc {{ '' if company.desc_quality == 'good' else 'muted' }}">
+      {% if company.desc_quality == 'missing' or not company.description %}
+        <em>No description available</em>
+      {% else %}
+        {{ company.description }}
+      {% endif %}
+    </div>
+    <div class="badges">
+      <span class="badge sector">{{ company.sector or 'Unclassified' }}</span>
+      <span class="badge stage">{{ company.stage }}</span>
+      {% if company.state %}<span class="badge state">{{ company.state }}</span>{% endif %}
+      {% if company.uses_ai %}<span class="badge ai">AI</span>{% endif %}
+    </div>
+  </div>
+</div>

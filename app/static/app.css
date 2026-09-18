@@ -1,0 +1,223 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --panel-2: #1e222b;
+  --border: #2a2f3a;
+  --text: #e6e8ec;
+  --muted: #9aa4b2;
+  --accent: #6ea8fe;
+  --ok: #3fb950;
+  --warn: #d29922;
+  --err: #f85149;
+  --new-dot: #f85149;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+header h1 { font-size: 18px; margin: 0; }
+header .sub { color: var(--muted); font-size: 13px; }
+.pipeline-actions { margin-left: auto; display: flex; gap: 8px; }
+#pipeline-status { flex-basis: 100%; }
+
+main { padding: 20px 24px 60px; max-width: 1100px; margin: 0 auto; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+details.addform summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 12px; color: var(--muted); }
+input, select, textarea {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 7px 9px;
+  font: inherit;
+}
+input:focus, select:focus, textarea:focus { outline: 1px solid var(--accent); }
+
+button {
+  background: var(--accent);
+  color: #0b1020;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:disabled { opacity: .5; cursor: default; }
+
+.muted { color: var(--muted); }
+.count-pill { background: var(--panel-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--muted); }
+
+.toast { border-radius: 8px; padding: 8px 12px; margin: 8px 0 0; font-size: 14px; border: 1px solid var(--border); }
+.toast.ok { border-color: #24532f; background: #12281a; color: #b9e6c4; }
+.toast.warn { border-color: #5c4a1f; background: #2a2313; color: #f0d69a; }
+
+.pipeline-summary { font-size: 13px; color: var(--muted); margin-top: 8px; }
+.pipeline-summary .warnings { color: var(--warn); margin: 4px 0; padding-left: 18px; }
+
+/* htmx loading indicator */
+.htmx-indicator { display: none; }
+.htmx-request .htmx-indicator { display: inline; }
+.htmx-request.htmx-indicator { display: inline; }
+.spinner {
+  display: inline-block; width: 12px; height: 12px; border: 2px solid currentColor;
+  border-right-color: transparent; border-radius: 50%; animation: spin .7s linear infinite;
+  vertical-align: -1px; margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------------------------------------------------------------------
+   Filter chips
+--------------------------------------------------------------------- */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--panel-2); border: 1px solid var(--border);
+  border-radius: 999px; padding: 4px 10px; font-size: 13px; color: var(--text);
+}
+.chip:hover { border-color: var(--accent); text-decoration: none; }
+.chip-x { color: var(--muted); font-weight: 700; }
+.chip.clear-all { color: var(--muted); }
+
+/* ---------------------------------------------------------------------
+   Map — persistent chrome, collapses to a strip once a state is chosen
+   (spec §5: "Same component, two heights, one CSS class flip")
+--------------------------------------------------------------------- */
+.map-section { margin-bottom: 18px; }
+.map-strip {
+  display: none;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 14px; cursor: pointer; font-size: 13px; color: var(--muted);
+}
+.map-section.is-collapsed .map-strip { display: block; }
+.map-section.is-collapsed .map-wrap { display: none; }
+
+.map-wrap {
+  position: relative;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px;
+}
+.us-map { display: block; width: 100%; height: auto; }
+.us-map .state, .us-map path[data-state], .us-map circle[data-state] {
+  fill: #2a2f3a; stroke: var(--bg); stroke-width: 1; cursor: pointer;
+  transition: fill .12s ease;
+}
+.us-map path[data-state]:hover, .us-map circle[data-state]:hover { fill: var(--accent); }
+.us-map .separator1 { stroke: #40465a; }
+
+.map-dot {
+  position: absolute;
+  width: 14px; height: 14px; margin: -7px 0 0 -7px;
+  background: var(--new-dot); color: #fff; border-radius: 50%;
+  font-size: 9px; font-weight: 700; line-height: 14px; text-align: center;
+  pointer-events: none;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(248,81,73,.5); }
+  50% { box-shadow: 0 0 0 5px rgba(248,81,73,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-dot { animation: none; }
+}
+
+.small-states {
+  display: flex; flex-direction: column; gap: 4px;
+  margin-top: 10px; max-width: 260px;
+}
+.small-state-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px;
+  padding: 4px 8px; font-size: 12px; color: var(--text);
+}
+.small-state-box:hover { border-color: var(--accent); text-decoration: none; }
+.small-state-box.active { border-color: var(--accent); background: #1c2b46; }
+.small-state-box .ss-name { font-weight: 700; width: 26px; }
+.small-state-box .ss-count { color: var(--muted); margin-left: auto; }
+
+.dot {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 14px; height: 14px; padding: 0 3px;
+  background: var(--new-dot); color: #fff; border-radius: 999px;
+  font-size: 9px; font-weight: 700;
+}
+
+/* ---------------------------------------------------------------------
+   Stage / sector pickers — counts reflect the current filter set
+--------------------------------------------------------------------- */
+.pickers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+@media (max-width: 700px) { .pickers { grid-template-columns: 1fr; } }
+.picker {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
+}
+.picker h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.picker-items { display: flex; flex-wrap: wrap; gap: 6px; }
+.picker-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--panel-2); border: 1px solid var(--border); border-radius: 999px;
+  padding: 4px 10px; font-size: 13px; color: var(--text);
+}
+.picker-item:hover { border-color: var(--accent); text-decoration: none; }
+.picker-item.active { border-color: var(--accent); background: #1c2b46; }
+.picker-item .count { color: var(--muted); font-size: 12px; }
+
+/* ---------------------------------------------------------------------
+   Company list
+--------------------------------------------------------------------- */
+.list-header { margin-bottom: 10px; }
+.empty-state { padding: 20px 0; }
+
+.company-row {
+  display: flex; gap: 10px;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 4px;
+}
+.company-row .gutter { width: 14px; flex: none; padding-top: 4px; }
+.new-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--new-dot);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) { .new-dot { animation: none; } }
+
+.company-row .main { flex: 1; min-width: 0; }
+.row-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.row-head .name { font-size: 15px; }
+.row-head .domain { color: var(--muted); font-size: 12px; }
+.company-row .desc { margin: 4px 0 8px; }
+.company-row .desc em { color: var(--muted); font-style: normal; }
+
+.badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.badge {
+  display: inline-block; border-radius: 999px; padding: 2px 9px; font-size: 11px;
+  border: 1px solid var(--border); color: var(--text);
+}
+.badge.sector { border-color: #35507e; color: #bcd3ff; }
+.badge.stage { border-color: #3a5c43; color: #b9e6c4; }
+.badge.state { border-color: var(--border); color: var(--muted); }
+.badge.ai { border-color: #5c4a1f; color: #f0d69a; }

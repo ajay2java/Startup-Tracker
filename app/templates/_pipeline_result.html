@@ -1,0 +1,20 @@
+<div class="pipeline-summary">
+  <strong>{{ action }} done.</strong>
+  {% if summary.fetched_per_source %}
+    <div>Fetched: {% for src, n in summary.fetched_per_source.items() %}{{ src }} {{ n }}{{ ", " if not loop.last }}{% endfor %}</div>
+  {% endif %}
+  {% if summary.fetch_warnings %}
+    <ul class="warnings">
+      {% for w in summary.fetch_warnings %}<li>{{ w }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+  {% if summary.gate %}
+    <div>Gate: {{ summary.gate.promoted }} promoted, {{ summary.gate.rejected }} rejected, {{ summary.gate.hold }} hold</div>
+  {% endif %}
+  {% if summary.dedupe %}
+    <div>Dedupe: {{ summary.dedupe.new_companies }} new companies, {{ summary.dedupe.merged }} merged</div>
+  {% endif %}
+  {% if summary.derive %}
+    <div>Derive: {{ summary.derive.derived }} derived, {{ summary.derive.reverted_to_hold }} reverted to hold</div>
+  {% endif %}
+</div>

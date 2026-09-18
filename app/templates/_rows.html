@@ -1,0 +1,9 @@
+{% for company in companies %}
+  {% set is_last = loop.last %}
+  {% include "_row.html" %}
+{% endfor %}
+{% if not companies %}
+  <p class="muted empty-state">
+    No companies match. Try clearing a filter, running the pipeline, or adding one manually.
+  </p>
+{% endif %}
