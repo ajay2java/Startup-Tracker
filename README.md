@@ -1,5 +1,8 @@
 # Startup Tracker
 
+Interface:
+<img width="932" height="485" alt="image" src="https://github.com/user-attachments/assets/b7741e75-008e-4fdb-9b62-3e4dca6ee5f4" />
+
 A personal, local tool for spotting up-and-coming **US** startups before the
 mainstream tech press or VCs catch on. One user, runs on your machine, zero
 paid services.
