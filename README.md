@@ -55,37 +55,6 @@ fetch → raw_records → gate → dedupe on domain → companies → derive →
 A source failing (down, rate-limited, missing token) never blocks a
 pipeline run — the others still run and the UI shows a non-blocking warning.
 
-## Setup
-
-```bash
-python -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
-copy .env.example .env
-```
-
-Then edit `.env` and add whatever tokens you have (all optional; SEC and HN
-work with none). The first pipeline run downloads the `all-MiniLM-L6-v2`
-embedding model (~90MB, one-time, then fully offline).
-
-- **GitHub token:** https://github.com/settings/tokens
-- **Product Hunt token:** https://www.producthunt.com/v2/oauth/applications
-- **`SEC_USER_AGENT`:** a real email/URL, per SEC's fair-access policy.
-
-If you're upgrading from v1, run the one-time migration before your first
-pipeline run — it re-queues v1's un-gated rows as `pending` raw records so
-the real gate (not v1's judgment) decides what gets promoted:
-
-```bash
-.venv\Scripts\python -m scripts.migrate_v1
-```
-
-## Run
-
-```bash
-.venv\Scripts\python -m uvicorn app.main:app --port 8000 --reload
-```
-
-Open http://localhost:8000.
 
 ## Using it
 
@@ -133,9 +102,3 @@ data/
   startups.db        created on first run (gitignored)
 ```
 
-## Explicitly out of scope
-
-Background/scheduled jobs (both pipeline stages are manual buttons — this is
-a single-user tool you start by hand, not a long-running service), LLM
-sector tagging, paid sources (Crunchbase/PitchBook), hosted/multi-user
-deployment.
